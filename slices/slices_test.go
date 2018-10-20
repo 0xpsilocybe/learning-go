@@ -2,6 +2,7 @@ package slices
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -23,10 +24,26 @@ func TestSum(t *testing.T) {
 
 }
 
+func TestSumAll(t *testing.T) {
+	got := SumAll([]int{4, 5}, []int{1, 9})
+	want := []int{9, 10}
+	if !reflect.DeepEqual(got, want) { 
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
 func ExampleSum() {
 	numbers := []int{1, 1, 1, 1, 1}
 	sum := Sum(numbers)
 	fmt.Println(sum)
 	// Output: 5
+}
+
+func ExampleSumAll() {
+	sliceOne := []int{1, 2}
+	sliceTwo := []int{0, 9}
+	sum := SumAll(sliceOne, sliceTwo)
+	fmt.Println(sum)
+	// Output: [3 9]
 }
 
