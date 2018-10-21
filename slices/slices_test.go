@@ -32,6 +32,29 @@ func TestSumAll(t *testing.T) {
 	}
 }
 
+func TestSumAllTail(t *testing.T) {
+
+	checkSum := func(t *testing.T, got, want []int) {
+		t.Helper()
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	}
+
+	t.Run("tails are being summed correctly", func(t *testing.T) {
+		got := SumAllTails([]int{1, 2}, []int{3, 5, 5})
+		want := []int{2, 10}
+		checkSum(t, got, want)
+	})
+
+	t.Run("safely sum empty array", func(t *testing.T) {
+		got := SumAllTails([]int{}, []int{1, 2, 3})
+		want := []int{0, 5}
+		checkSum(t, got, want)
+	})
+
+}
+
 func ExampleSum() {
 	numbers := []int{1, 1, 1, 1, 1}
 	sum := Sum(numbers)
@@ -45,5 +68,13 @@ func ExampleSumAll() {
 	sum := SumAll(sliceOne, sliceTwo)
 	fmt.Println(sum)
 	// Output: [3 9]
+}
+
+func ExampleSumAllTails() {
+	emptySlice := []int{}
+	slice := []int{1, 4, 11}
+	sum := SumAllTails(slice, emptySlice)
+	fmt.Println(sum)
+	// Output: [15 0]
 }
 
