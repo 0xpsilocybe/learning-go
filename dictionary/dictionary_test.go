@@ -69,6 +69,16 @@ func TestSearch(t *testing.T) {
 
 }
 
+func TestDelete(t *testing.T) {
+	word := "test"
+	dictionary := Dictionary{
+		word: "this is just a test",
+	}
+	dictionary.Delete(word)
+	_, err := dictionary.Search(word)
+	assertError(t, err, ErrNotFound)
+}
+
 func assertError(t *testing.T, got, want error) {
 	t.Helper()
 	if got == nil {
