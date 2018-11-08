@@ -1,13 +1,16 @@
 package pointers
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
 type Bitcoin int
 
-var ErrInsufficientFunds = errors.New("cannot withdraw, insuficient funds")
+type WalletErr string
+
+const ErrInsufficientFunds = WalletErr("cannot withdraw, insuficient funds")
+
+func (e WalletErr) Error() string {
+	return string(e)
+}
 
 func (b Bitcoin) String() string {
 	return fmt.Sprintf("%d BTC", b)
