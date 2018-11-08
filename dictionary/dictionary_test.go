@@ -2,6 +2,16 @@ package main
 
 import "testing"
 
+func TestAdd(t *testing.T) {
+	word := "test"
+	definition := "this is just a test"
+	dictionary := Dictionary{}
+	dictionary.Add(word, definition)
+	got, err := dictionary.Search(word)
+	assertNoError(t, err)
+	assertStrings(t, got, definition)
+}
+
 func TestSearch(t *testing.T) {
 	dictionary := Dictionary{
 		"test": "this is just a test",
