@@ -18,14 +18,6 @@ func (s *DefaultSleeper) Sleep() {
 	time.Sleep(1 * time.Second)
 }
 
-type SpySleeper struct {
-	Calls int
-}
-
-func (s *SpySleeper) Sleep() {
-	s.Calls++
-}
-
 const finalWord = "Go!"
 const countdownStart = 3
 
