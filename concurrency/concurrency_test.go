@@ -45,3 +45,13 @@ func BenchmarkCheckWebsites(b *testing.B) {
 	}
 }
 
+func BenchmarkCheckWebsitesSync(b *testing.B) {
+	urls := make([]string, 100)
+	for i := 0; i < 100; i++ {
+		urls[i] = "a URL"
+	}
+	for i := 0; i < b.N; i++ {
+		CheckWebsitesSync(slowStubWebsiteChecker, urls)
+	}
+}
+
