@@ -22,7 +22,7 @@ func (v *VolatilePlayerStore) RecordWin(name string) {
 	v.scores[name]++
 }
 
-func NewPlayerStore() *VolatilePlayerStore {
+func NewVolatilePlayerStore() *VolatilePlayerStore {
 	return &VolatilePlayerStore{map[string]int{}}
 }
 

@@ -79,7 +79,7 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewPlayerStore()
+	store := NewVolatilePlayerStore()
 	server := PlayerServer{store}
 	player := "Pepper"
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
