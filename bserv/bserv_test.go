@@ -79,7 +79,10 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewVolatilePlayerStore()
+	store, err := NewBoltPlayerStore("test.db")
+	if err != nil {
+		t.Fatalf("couldn't initialize store: %s", err)
+	}
 	server := PlayerServer{store}
 	player := "Pepper"
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
