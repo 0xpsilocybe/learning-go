@@ -81,13 +81,16 @@ func NewBoltPlayerStore(path string) (store *BoltPlayerStore, err error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(ScoresBucket))
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)		
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	return &BoltPlayerStore{db}, nil
 }
 
@@ -118,13 +121,3 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, name string) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func GetPlayerScore(name string) int {
-	switch name {
-	case "Floyd":
-		return 10
-	case "Pepper":
-		return 20
-	default:
-		return 0
-	}
-}
