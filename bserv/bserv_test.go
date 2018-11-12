@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -92,7 +93,8 @@ func TestLeague(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store, err := NewBoltPlayerStore("test.db")
+	const dbPath = "test.db"
+	store, err := NewBoltPlayerStore(dbPath)
 	if err != nil {
 		t.Fatalf("couldn't initialize store: %s", err)
 	}
@@ -105,6 +107,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	server.ServeHTTP(response, newGetScoreRequest(player))
 	assertResponseStatus(t, response.Code, http.StatusOK)
 	assertResponseBody(t, response.Body.String(), "3")
+	os.Remove(dbPath)
 }
 
 func newGetScoreRequest(name string) *http.Request {
