@@ -8,7 +8,7 @@ import (
 )
 
 type StubPlayerStore struct {
-	scores map[string]int
+	scores   map[string]int
 	winCalls []string
 }
 
@@ -21,14 +21,14 @@ func (s *StubPlayerStore) RecordWin(name string) {
 }
 
 func TestGETPlayers(t *testing.T) {
-	store := StubPlayerStore {
-		map[string]int {
+	store := StubPlayerStore{
+		map[string]int{
 			"Pepper": 20,
-			"Floyd": 10,
+			"Floyd":  10,
 		},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -60,7 +60,7 @@ func TestStoreWins(t *testing.T) {
 		map[string]int{},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -78,12 +78,25 @@ func TestStoreWins(t *testing.T) {
 
 }
 
+func TestLeague(t *testing.T) {
+	store := StubPlayerStore{}
+	server := NewPlayerServer(&store)
+
+	t.Run("it returns 200 on /league", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, request)
+		assertResponseStatus(t, response.Code, http.StatusOK)
+	})
+
+}
+
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	store, err := NewBoltPlayerStore("test.db")
 	if err != nil {
 		t.Fatalf("couldn't initialize store: %s", err)
 	}
-	server := PlayerServer{store}
+	server := NewPlayerServer(store)
 	player := "Pepper"
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
@@ -119,4 +132,3 @@ func assertResponseBody(t *testing.T, got, want string) {
 		t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
 	}
 }
-
