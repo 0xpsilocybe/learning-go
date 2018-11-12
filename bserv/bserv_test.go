@@ -1,16 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
 	"testing"
 )
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+	league   []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -21,12 +25,17 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.league
+}
+
 func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
 		},
+		nil,
 		nil,
 	}
 	server := NewPlayerServer(&store)
@@ -60,6 +69,7 @@ func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
 		nil,
+		nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -80,14 +90,21 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	store := StubPlayerStore{}
-	server := NewPlayerServer(&store)
 
-	t.Run("it returns 200 on /league", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	t.Run("it returns league table as JSON on /league", func(t *testing.T) {
+		wantedLeague := []Player{
+			{"Cleo", 20},
+			{"Adam", 32},
+			{"Voytek", 21},
+		}
+		store := StubPlayerStore{nil, nil, wantedLeague}
+		server := NewPlayerServer(&store)
+		request := newGetLeagueRequest()
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, request)
 		assertResponseStatus(t, response.Code, http.StatusOK)
+		got := getLeagueFromResponse(t, response.Body)
+		assertLeague(t, got, wantedLeague)
 	})
 
 }
@@ -122,6 +139,24 @@ func newPostWinRequest(name string) *http.Request {
 	return request
 }
 
+func newGetLeagueRequest() *http.Request {
+	url := "/league"
+	request, _ := http.NewRequest(http.MethodGet, url, nil)
+	return request
+}
+
+func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
+	t.Helper()
+	err := json.NewDecoder(body).Decode(&league)
+	if err != nil {
+		t.Fatalf(
+			"unable to parse response body '%s' into slice of Player, reason %s",
+			body, err,
+		)
+	}
+	return
+}
+
 func assertResponseStatus(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
@@ -133,5 +168,12 @@ func assertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
+	}
+}
+
+func assertLeague(t *testing.T, got, want []Player) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
 	}
 }

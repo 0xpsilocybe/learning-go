@@ -46,6 +46,10 @@ func (b *BoltPlayerStore) RecordWin(name string) {
 	}
 }
 
+func (b *BoltPlayerStore) GetLeague() []Player {
+	return nil
+}
+
 func (b *BoltPlayerStore) Close() {
 	b.db.Close()
 }
