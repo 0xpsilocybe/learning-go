@@ -12,8 +12,12 @@ func (v *VolatilePlayerStore) RecordWin(name string) {
 	v.scores[name]++
 }
 
-func (v *VolatilePlayerStore) GetLeague() {
-
+func (v *VolatilePlayerStore) GetLeague() []Player {
+	var league []Player
+	for name, wins := range v.scores {
+		league = append(league, Player{name, wins})
+	}
+	return league
 }
 
 func NewVolatilePlayerStore() *VolatilePlayerStore {

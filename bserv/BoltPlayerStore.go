@@ -8,8 +8,8 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const (
-	ScoresBucket = "Scores"
+var (
+	ScoresBucket = []byte("Scores")
 )
 
 type BoltPlayerStore struct {
@@ -19,7 +19,7 @@ type BoltPlayerStore struct {
 func (b *BoltPlayerStore) GetPlayerScore(name string) int {
 	score := 0
 	err := b.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(ScoresBucket))
+		b := tx.Bucket(ScoresBucket)
 		v := b.Get([]byte(name))
 		if v != nil {
 			score = int(binary.BigEndian.Uint32(v))
@@ -37,7 +37,7 @@ func (b *BoltPlayerStore) RecordWin(name string) {
 		score := uint32(b.GetPlayerScore(name) + 1)
 		scoreBuffer := make([]byte, 4)
 		binary.BigEndian.PutUint32(scoreBuffer, score)
-		b := tx.Bucket([]byte(ScoresBucket))
+		b := tx.Bucket(ScoresBucket)
 		err := b.Put([]byte(name), scoreBuffer)
 		return err
 	})
@@ -47,7 +47,21 @@ func (b *BoltPlayerStore) RecordWin(name string) {
 }
 
 func (b *BoltPlayerStore) GetLeague() []Player {
-	return nil
+	var league []Player
+	err := b.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(ScoresBucket)
+		b.ForEach(func(k, v []byte) error {
+			name := string(k)
+			wins := int(binary.BigEndian.Uint32(v))
+			league = append(league, Player{name, wins})
+			return nil
+		})
+		return nil
+	})
+	if err != nil {
+		return nil
+	}
+	return league
 }
 
 func (b *BoltPlayerStore) Close() {
@@ -64,7 +78,7 @@ func NewBoltPlayerStore(path string) (store *BoltPlayerStore, err error) {
 		return nil, err
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte(ScoresBucket))
+		_, err := tx.CreateBucketIfNotExists(ScoresBucket)
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
