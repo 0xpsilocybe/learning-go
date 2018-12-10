@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -61,6 +62,9 @@ func (b *BoltPlayerStore) GetLeague() []Player {
 	if err != nil {
 		return nil
 	}
+	sort.Slice(league, func(i, j int) bool {
+		return league[i].Wins > league[j].Wins
+	})
 	return league
 }
 
