@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-const jsonContentType = "application/json"
+const JsonContentType = "application/json"
 
 type Player struct {
 	Name string
@@ -58,6 +58,6 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, name string) {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", jsonContentType)
+	w.Header().Set("content-type", JsonContentType)
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 }
