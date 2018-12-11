@@ -7,8 +7,10 @@ import (
 	"github.com/bartek/learning-go/bserv"
 )
 
+const connection = "../../players.db"
+
 func main() {
-	db, err := poker.NewBoltPlayerStore("players.db")
+	db, err := poker.NewBoltPlayerStore(connection)
 	if err != nil {
 		log.Fatal("There was a problem creating a database %v", err)
 	}
