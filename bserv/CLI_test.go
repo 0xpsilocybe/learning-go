@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bartek/learning-go/bserv"
+	"github.com/0xpsilocybe/learning-go/bserv"
 )
 
 var dummySpyAlerter = &poker.SpyBlindAlerter{}

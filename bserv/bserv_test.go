@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/bartek/learning-go/bserv"
+	"github.com/0xpsilocybe/learning-go/bserv"
 )
 
 func TestGETPlayers(t *testing.T) {

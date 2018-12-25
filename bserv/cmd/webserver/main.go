@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bartek/learning-go/bserv"
+	"github.com/0xpsilocybe/learning-go/bserv"
 )
 
 const connection = "../../players.db"
