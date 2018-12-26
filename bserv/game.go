@@ -1,31 +1,7 @@
 package poker
 
-import (
-	"time"
-)
-
-type Game struct {
-	alerter BlindAlerter
-	store PlayerStore
-}
-
-func NewGame(alerter BlindAlerter, store PlayerStore) *Game {
-	return &Game{
-		alerter: alerter,
-		store:   store,
-	}
-}
-
-func (g *Game) Start(playerCount int) {
-	blindIncrement := time.Duration(5+playerCount) * time.Minute
-	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
-	for _, blind := range blinds {
-		g.alerter.ScheduleAlertAt(blindTime, blind)
-		blindTime = blindTime + blindIncrement
-	}
-}
-
-func (g *Game) Finish(winner string) {
-	g.store.RecordWin(winner)
+// Game manages the state of current poker round
+type Game interface {
+	Start(playersCount int)
+	Finish(winner string)
 }

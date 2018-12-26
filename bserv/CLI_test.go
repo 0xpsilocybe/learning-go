@@ -27,7 +27,7 @@ func TestCLI(t *testing.T) {
 	t.Run("start game with 3 players and finish it with 'Chris' as a winner", func(t *testing.T) {
 		in := userSends("3", "Chris wins")
 		playerStore := &poker.StubPlayerStore{}
-		game := poker.NewGame(dummyBlindAlerter, playerStore)
+		game := poker.NewTexasHoldem(dummyBlindAlerter, playerStore)
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 		poker.AssertPlayerWin(t, playerStore, "Chris")
@@ -36,7 +36,7 @@ func TestCLI(t *testing.T) {
 	t.Run("start game with 8 players and finish it with 'Cleo' as a winner", func(t *testing.T) {
 		in := userSends("8", "Cleo wins")
 		playerStore := &poker.StubPlayerStore{}
-		game := poker.NewGame(dummyBlindAlerter, playerStore)
+		game := poker.NewTexasHoldem(dummyBlindAlerter, playerStore)
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 		poker.AssertPlayerWin(t, playerStore, "Cleo")
@@ -47,7 +47,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("5\nBob wins\n")
 		playerStore := &poker.StubPlayerStore{}
 		blindAlerter := &poker.SpyBlindAlerter{}
-		game := poker.NewGame(blindAlerter, playerStore)
+		game := poker.NewTexasHoldem(blindAlerter, playerStore)
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		// Act
 		cli.PlayPoker()
@@ -81,7 +81,7 @@ func TestCLI(t *testing.T) {
 		stdOut := &bytes.Buffer{}
 		in := strings.NewReader("7\n")
 		blindAlerter := &poker.SpyBlindAlerter{}
-		game := poker.NewGame(blindAlerter, dummyPlayerStore)
+		game := poker.NewTexasHoldem(blindAlerter, dummyPlayerStore)
 		cli := poker.NewCLI(in, stdOut, game)
 		// Act
 		cli.PlayPoker()

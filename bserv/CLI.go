@@ -14,10 +14,10 @@ type CLI struct {
 	playerStore PlayerStore
 	in          *bufio.Scanner
 	out         io.Writer
-	game        *Game
+	game        Game
 }
 
-func NewCLI(in io.Reader, out io.Writer, game *Game) *CLI {
+func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
 	scanner := bufio.NewScanner(in)
 	scanner.Split(bufio.ScanLines)
 	return &CLI{
