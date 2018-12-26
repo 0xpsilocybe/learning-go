@@ -3,6 +3,7 @@ package poker_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"testing"
 	"time"
@@ -17,30 +18,37 @@ var (
 	dummyStdOut       = &bytes.Buffer{}
 )
 
+func userSends(messages... string) io.Reader {
+	return strings.NewReader(strings.Join(messages, "\n"))
+}
+
 func TestCLI(t *testing.T) {
 
-	t.Run("record Chris win from user input", func(t *testing.T) {
-		in := strings.NewReader("Chris wins\n")
+	t.Run("start game with 3 players and finish it with 'Chris' as a winner", func(t *testing.T) {
+		in := userSends("3", "Chris wins")
 		playerStore := &poker.StubPlayerStore{}
-		cli := poker.NewCLI(playerStore, in, dummyStdOut, dummyBlindAlerter)
+		game := poker.NewGame(dummyBlindAlerter, playerStore)
+		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 		poker.AssertPlayerWin(t, playerStore, "Chris")
 	})
 
-	t.Run("record Cleo win from user input", func(t *testing.T) {
-		in := strings.NewReader("Cleo wins\n")
+	t.Run("start game with 8 players and finish it with 'Cleo' as a winner", func(t *testing.T) {
+		in := userSends("8", "Cleo wins")
 		playerStore := &poker.StubPlayerStore{}
-		cli := poker.NewCLI(playerStore, in, dummyStdOut, dummyBlindAlerter)
+		game := poker.NewGame(dummyBlindAlerter, playerStore)
+		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 		poker.AssertPlayerWin(t, playerStore, "Cleo")
 	})
 
 	t.Run("it schedules printing blind values", func(t *testing.T) {
 		// Arrange
-		in := strings.NewReader("Bob wins\n")
+		in := strings.NewReader("5\nBob wins\n")
 		playerStore := &poker.StubPlayerStore{}
 		blindAlerter := &poker.SpyBlindAlerter{}
-		cli := poker.NewCLI(playerStore, in, dummyStdOut, blindAlerter)
+		game := poker.NewGame(blindAlerter, playerStore)
+		cli := poker.NewCLI(in, dummyStdOut, game)
 		// Act
 		cli.PlayPoker()
 		cases := []poker.ScheduledAlert{
@@ -73,7 +81,8 @@ func TestCLI(t *testing.T) {
 		stdOut := &bytes.Buffer{}
 		in := strings.NewReader("7\n")
 		blindAlerter := &poker.SpyBlindAlerter{}
-		cli := poker.NewCLI(dummyPlayerStore, in, stdOut, blindAlerter)
+		game := poker.NewGame(blindAlerter, dummyPlayerStore)
+		cli := poker.NewCLI(in, stdOut, game)
 		// Act
 		cli.PlayPoker()
 		// Assert
