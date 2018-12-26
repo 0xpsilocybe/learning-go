@@ -21,6 +21,7 @@ func main() {
 	poker.NewCLI(
 		db,
 		os.Stdin,
+		os.Stdout,
 		poker.BlindAlerterFunc(poker.StdOutAlerter),
 	).PlayPoker()
 }
