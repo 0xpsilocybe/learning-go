@@ -39,6 +39,35 @@ func userSends(messages... string) io.Reader {
 
 func TestCLI(t *testing.T) {
 
+	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
+		// Arrange
+		game := &GameSpy{}
+		in := userSends("whatever")
+		out := &bytes.Buffer{}
+		cli := poker.NewCLI(in, out, game)
+		// Act
+		cli.PlayPoker()
+		// Assert
+		wantPrompt := poker.PlayerPrompt + poker.BadPlayerInputErrorMessage
+		assertGameNotStarted(t, game)
+		assertMessagesSentToUser(t, out, wantPrompt)
+	})
+
+	t.Run("it prints an error when a winner is announced in a wrong way and does not finish the game", func(t *testing.T) {
+		// Arrange
+		game := &GameSpy{}
+		in := userSends("6", "Lloyd is a champ")
+		out := &bytes.Buffer{}
+		cli := poker.NewCLI(in, out, game)
+		// Act
+		cli.PlayPoker()
+		// Assert
+		wantPrompt := poker.PlayerPrompt + poker.BadWinnerAnnouncementErrorMessage
+		assertMessagesSentToUser(t, out, wantPrompt)
+		assertGameStartedWith(t, game, 6)
+		assertGameNotFinished(t, game)
+	})
+
 	t.Run("start game with 3 players and finish it with 'Chris' as a winner", func(t *testing.T) {
 		// Arrange
 		game := &GameSpy{}
